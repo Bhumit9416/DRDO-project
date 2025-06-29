@@ -132,10 +132,10 @@ export default function DEWDashboard() {
           </h1>
           <p className="text-xl text-slate-300">Comprehensive Literature Survey & Strategic Analysis</p>
           <div className="flex justify-center space-x-4">
-            <Badge variant="outline" className="text-blue-400 border-blue-400">
+            <Badge className="text-blue-400 border-blue-400" variant="outline">
               DRDO ISSA Project
             </Badge>
-            <Badge variant="outline" className="text-green-400 border-green-400">
+            <Badge className="text-green-400 border-green-400" variant="outline">
               Classification: Research
             </Badge>
           </div>
