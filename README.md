@@ -1,41 +1,30 @@
 # Directed Energy Weapon Dashboard
 
-## 📡 Overview
+*Automatically synced with your [v0.dev](https://v0.dev) deployments*
 
-This repository contains the full-stack **Directed Energy Weapon (DEW) Dashboard**, developed as part of my internship project at **DRDO ISSA**.  
-It provides an interactive platform to visualize, track, and analyze data related to Directed Energy Weapon systems, including:
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/medfolios-projects/v0-directed-energy-weapon-dashboard)
+[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/42OdJyiDxqX)
 
-- Types and specifications of DEWs (HEL, HPM, particle beams)
-- Deployment status and operational ranges
-- Real-time data charts and technical metrics
-- Comparative analytics on regional defense developments
+## Overview
 
-The goal is to deliver a secure, modular web dashboard to aid defense research and strategic studies on DEW capabilities.
+This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
+Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
 
----
+## Deployment
 
-## 🚀 Features
+Your project is live at:
 
-✅ Interactive UI for tracking multiple DEW systems  
-✅ Modular charts & tables for performance data  
-✅ Configurable data sources (JSON/API modules)  
-✅ Secure deployment-ready architecture
+**[https://vercel.com/medfolios-projects/v0-directed-energy-weapon-dashboard](https://vercel.com/medfolios-projects/v0-directed-energy-weapon-dashboard)**
 
----
+## Build your app
 
-## 🏗 Tech Stack
+Continue building your app on:
 
-- **Frontend:** React (Next.js) with Tailwind CSS for responsive design
-- **Backend:** Node.js (Express) APIs for secure data handling
-- **Visualization:** Recharts & D3.js for dynamic plots
-- **Database:** PostgreSQL / MongoDB (flexible modules under `/app`)
-- **Security:** Auth middleware, audit logs for sensitive access
+**[https://v0.dev/chat/projects/42OdJyiDxqX](https://v0.dev/chat/projects/42OdJyiDxqX)**
 
----
+## How It Works
 
-## 🔬 Usage
-
-### Clone the repository
-```bash
-git clone https://github.com/your-username/directed-energy-weapon-dashboard.git
-cd directed-energy-weapon-dashboard
+1. Create and modify your project using [v0.dev](https://v0.dev)
+2. Deploy your chats from the v0 interface
+3. Changes are automatically pushed to this repository
+4. Vercel deploys the latest version from this repository
