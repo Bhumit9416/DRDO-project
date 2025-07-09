@@ -1,30 +1,35 @@
 # Directed Energy Weapon Dashboard
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+A dashboard to visualize and manage information related to Directed Energy Weapons (DEWs), built with Next.js, TypeScript, and Tailwind CSS.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/medfolios-projects/v0-directed-energy-weapon-dashboard)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/42OdJyiDxqX)
+---
 
-## Overview
-
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
-
-## Deployment
+## 🚀 Live Deployment
 
 Your project is live at:
+(https://drdo-project-theta.vercel.app/)
 
-**[https://vercel.com/medfolios-projects/v0-directed-energy-weapon-dashboard](https://vercel.com/medfolios-projects/v0-directed-energy-weapon-dashboard)**
+---
 
-## Build your app
+## 📚 Overview
 
-Continue building your app on:
+This repository contains all the code and configuration needed to build, develop, and deploy the Directed Energy Weapon Dashboard.  
+The dashboard provides a clean interface to display key information and insights on DEWs.
 
-**[https://v0.dev/chat/projects/42OdJyiDxqX](https://v0.dev/chat/projects/42OdJyiDxqX)**
+---
 
-## How It Works
+## ⚙️ Tech Stack
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+- **Next.js** - React framework for production
+- **TypeScript** - Strongly typed JavaScript
+- **Tailwind CSS** - Utility-first CSS for rapid UI development
+- **Node.js** - Server-side environment
+
+---
+
+## 🚀 How to Run Locally
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Bhumit9416/DRDO-project.git
+   cd DRDO-project
