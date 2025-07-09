@@ -33,3 +33,13 @@ The dashboard provides a clean interface to display key information and insights
    ```bash
    git clone https://github.com/Bhumit9416/DRDO-project.git
    cd DRDO-project
+
+2. Install dependencies:
+
+'''bash
+npm install
+
+3. Run the development server:
+
+'''bash
+npm run dev
