@@ -4,566 +4,810 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Zap, Globe, Settings, Shield, Cpu, MapPin, AlertTriangle, TrendingUp, Database, X } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+} from "recharts"
+import {
+  Shield,
+  Zap,
+  Target,
+  Globe,
+  BookOpen,
+  Download,
+  FileText,
+  AlertTriangle,
+  TrendingUp,
+  Users,
+  MapPin,
+  Cpu,
+  Settings,
+} from "lucide-react"
 
 export default function DEWDashboard() {
-  const [selectedWeapon, setSelectedWeapon] = useState("laser")
-  const [showSystemDetails, setShowSystemDetails] = useState(false)
   const [selectedSystem, setSelectedSystem] = useState(null)
-  const [showReport, setShowReport] = useState(false)
-  const [showAlgorithmDetails, setShowAlgorithmDetails] = useState(false)
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(null)
+  const [showReport, setShowReport] = useState(false)
 
+  // Enhanced data structures
   const dewTypes = [
     {
-      id: "laser",
       name: "High Energy Laser (HEL)",
-      power: "10kW - 300kW+",
+      description: "Concentrated laser beams for precision targeting",
+      power: "10kW - 1MW+",
       range: "1-20 km",
-      effectiveness: 95,
-      description: "Solid-state, chemical, or fiber lasers for precision targeting",
-      applications: ["Anti-drone", "Missile defense", "Counter-electronics"],
-      algorithms: ["Beam steering", "Atmospheric compensation", "Target tracking"],
+      applications: ["Anti-drone", "Missile defense", "Naval systems"],
+      advantages: ["Precision", "Speed of light", "Low cost per shot"],
+      limitations: ["Weather dependent", "Power requirements", "Atmospheric absorption"],
     },
     {
-      id: "microwave",
       name: "High Power Microwave (HPM)",
-      power: "100MW - 1GW",
-      range: "0.5-10 km",
-      effectiveness: 85,
-      description: "Electromagnetic pulse weapons for electronic disruption",
-      applications: ["Electronic warfare", "Communication jamming", "Vehicle stopping"],
-      algorithms: ["Frequency hopping", "Pulse shaping", "Interference patterns"],
+      description: "Electromagnetic pulses to disable electronics",
+      power: "1-100 MW",
+      range: "0.1-10 km",
+      applications: ["Electronic warfare", "Crowd control", "Infrastructure protection"],
+      advantages: ["Area effect", "Non-lethal option", "Electronic disruption"],
+      limitations: ["Limited range", "Shielding countermeasures", "Collateral damage"],
     },
     {
-      id: "particle",
       name: "Particle Beam Weapons",
-      power: "1-100 GeV",
-      range: "Space-based",
-      effectiveness: 70,
-      description: "Accelerated charged particles for kinetic damage",
-      applications: ["Satellite defense", "Ballistic missile intercept", "Space warfare"],
-      algorithms: ["Particle acceleration", "Magnetic focusing", "Trajectory calculation"],
-    },
-    {
-      id: "plasma",
-      name: "Plasma Weapons",
-      power: "Variable",
-      range: "0.1-5 km",
-      effectiveness: 60,
-      description: "Ionized gas projectiles for multiple effects",
-      applications: ["Crowd control", "Electronic disruption", "Atmospheric manipulation"],
-      algorithms: ["Plasma confinement", "Magnetic bottle", "Ion acceleration"],
+      description: "Accelerated charged particles for target destruction",
+      power: "1-10 MW",
+      range: "1-100 km (space)",
+      applications: ["Space-based defense", "Ballistic missile defense"],
+      advantages: ["No atmospheric limitations in space", "High penetration"],
+      limitations: ["Atmospheric scattering", "Complex technology", "Power requirements"],
     },
   ]
 
-  const countryCapabilities = [
+  const globalStatus = [
     {
       country: "India",
-      systems: ["KALI (Kilo Ampere Linear Injector)", "DURGA-II", "LASTEC Systems"],
-      development: 75,
-      operational: 45,
-      research: ["DRDO", "BARC", "LASTEC", "IIT Network"],
-      focus: "Anti-satellite, missile defense, electronic warfare",
+      systems: [
+        {
+          name: "KALI",
+          type: "HPM",
+          status: "Operational",
+          details: {
+            power: "1 GW",
+            range: "3-5 km",
+            frequency: "1-40 GHz",
+            applications: ["Electronic warfare", "Missile testing"],
+            developer: "DRDO",
+            location: "Chitradurga, Karnataka",
+            yearDeployed: "2012",
+            cost: "$50 million",
+            specifications: {
+              "Peak Power": "1 GW",
+              "Pulse Duration": "0.5-5 μs",
+              "Repetition Rate": "1-1000 Hz",
+              "Beam Divergence": "< 1 mrad",
+              "Operating Temperature": "-40°C to +60°C",
+              Weight: "2000 kg",
+              Dimensions: "3m x 2m x 1.5m",
+            },
+          },
+        },
+        {
+          name: "DURGA-II",
+          type: "HEL",
+          status: "Development",
+          details: {
+            power: "10 kW",
+            range: "2 km",
+            wavelength: "1.06 μm",
+            applications: ["Anti-drone", "Point defense"],
+            developer: "DRDO",
+            location: "Hyderabad",
+            yearDeployed: "2025 (Expected)",
+            cost: "$30 million",
+            specifications: {
+              "Continuous Power": "10 kW",
+              Wavelength: "1.06 μm",
+              "Beam Quality": "M² < 1.5",
+              "Tracking Accuracy": "< 10 μrad",
+              "Engagement Time": "< 5 seconds",
+              "Power Consumption": "50 kW",
+              "Cooling System": "Liquid cooled",
+            },
+          },
+        },
+      ],
+      capability: 65,
+      investment: "$500M",
+      projects: 8,
     },
     {
       country: "United States",
-      systems: ["THEL", "ABL", "LAWS", "HELIOS", "ODIN"],
-      development: 95,
-      operational: 80,
-      research: ["Lockheed Martin", "Raytheon", "Boeing", "Northrop Grumman"],
-      focus: "Full spectrum DEW capabilities",
+      systems: [
+        {
+          name: "LAWS",
+          type: "HEL",
+          status: "Deployed",
+          details: {
+            power: "30 kW",
+            range: "1.6 km",
+            platform: "Naval",
+            applications: ["Anti-drone", "Small boat defense"],
+            developer: "Northrop Grumman",
+            location: "USS Ponce",
+            yearDeployed: "2014",
+            cost: "$40 million",
+            specifications: {
+              "Laser Power": "30 kW",
+              Wavelength: "1.06 μm",
+              "Beam Director": "6-axis gimbal",
+              "Target Acquisition": "EO/IR sensors",
+              "Power Source": "Ship's electrical grid",
+              "Operating Range": "Sea State 3",
+              MTBF: "> 1000 hours",
+            },
+          },
+        },
+        {
+          name: "HELIOS",
+          type: "HEL",
+          status: "Testing",
+          details: {
+            power: "60 kW",
+            range: "10+ km",
+            platform: "Naval",
+            applications: ["Missile defense", "Anti-aircraft"],
+            developer: "Lockheed Martin",
+            location: "USS Preble",
+            yearDeployed: "2021",
+            cost: "$150 million",
+            specifications: {
+              "Laser Power": "60 kW",
+              Scalability: "Up to 150 kW",
+              Integration: "Aegis Combat System",
+              Sensors: "Long-range surveillance",
+              Cooling: "Seawater cooling",
+              Availability: "> 95%",
+              Maintenance: "Minimal crew required",
+            },
+          },
+        },
+      ],
+      capability: 95,
+      investment: "$5B",
+      projects: 25,
+    },
+    {
+      country: "Israel",
+      systems: [
+        {
+          name: "Iron Beam",
+          type: "HEL",
+          status: "Testing",
+          details: {
+            power: "100 kW",
+            range: "7 km",
+            applications: ["Missile defense", "Mortar interception"],
+            developer: "Rafael Advanced Defense",
+            location: "Multiple test sites",
+            yearDeployed: "2024 (Expected)",
+            cost: "$100 million",
+            specifications: {
+              "Laser Power": "100 kW",
+              "Intercept Range": "7 km",
+              "Target Types": "Rockets, mortars, drones",
+              "Reaction Time": "< 3 seconds",
+              "Cost per Shot": "$2",
+              Availability: "24/7 operation",
+              Integration: "Iron Dome system",
+            },
+          },
+        },
+      ],
+      capability: 85,
+      investment: "$1B",
+      projects: 12,
     },
     {
       country: "China",
-      systems: ["Silent Hunter", "Low Altitude Guard", "PLA Strategic Support Force"],
-      development: 85,
-      operational: 60,
-      research: ["CASIC", "CETC", "NORINCO"],
-      focus: "Anti-access/area denial, space warfare",
+      systems: [
+        {
+          name: "Silent Hunter",
+          type: "HEL",
+          status: "Development",
+          details: {
+            power: "30 kW",
+            range: "4 km",
+            applications: ["Anti-drone", "Light vehicle"],
+            developer: "China Academy of Sciences",
+            location: "Classified",
+            yearDeployed: "2023",
+            cost: "Classified",
+            specifications: {
+              "Laser Power": "30 kW",
+              Platform: "Vehicle-mounted",
+              "Target Acquisition": "Radar + EO",
+              "Engagement Envelope": "360°",
+              "Power Source": "Diesel generator",
+              "Deployment Time": "< 3 minutes",
+              Crew: "2 operators",
+            },
+          },
+        },
+      ],
+      capability: 75,
+      investment: "$2B",
+      projects: 15,
     },
     {
       country: "Russia",
-      systems: ["Peresvet", "Zadira", "Sokol-Eshelon"],
-      development: 80,
-      operational: 55,
-      research: ["Almaz-Antey", "Rostec", "Russian Academy of Sciences"],
-      focus: "Strategic defense, electronic warfare",
-    },
-    {
-      country: "Israel",
-      systems: ["Iron Beam", "Nautilus", "SkyGuard"],
-      development: 90,
-      operational: 70,
-      research: ["Rafael", "Elbit Systems", "IAI"],
-      focus: "Tactical defense, precision strikes",
+      systems: [
+        {
+          name: "Peresvet",
+          type: "HEL",
+          status: "Operational",
+          details: {
+            power: "Classified",
+            range: "Classified",
+            applications: ["Anti-satellite", "Missile defense"],
+            developer: "Rosatom",
+            location: "Multiple sites",
+            yearDeployed: "2019",
+            cost: "Classified",
+            specifications: {
+              Classification: "Strategic weapon",
+              Platform: "Mobile",
+              "Power Source": "Nuclear",
+              "Target Types": "Satellites, missiles",
+              "Operational Status": "Active duty",
+              Deployment: "Multiple units",
+              Mobility: "Road-mobile",
+            },
+          },
+        },
+      ],
+      capability: 70,
+      investment: "$1.5B",
+      projects: 10,
     },
   ]
 
-  const detailedSystems = {
-    "KALI (Kilo Ampere Linear Injector)": {
-      country: "India",
-      type: "Electron Beam Accelerator",
-      specifications: {
-        "Peak Power": "1 GW",
-        "Pulse Duration": "2.5 μs",
-        "Repetition Rate": "1 Hz",
-        "Electron Energy": "1 MeV",
-        "Beam Current": "1 kA",
-        Range: "1-2 km",
-        "Target Types": "Electronics, Missiles",
-      },
-      capabilities: [
-        "EMP generation for testing",
-        "Electronic warfare simulation",
-        "Missile guidance disruption",
-        "Satellite component testing",
-      ],
-      status: "Operational",
-      location: "DRDO, Hyderabad",
-      yearDeployed: "2004",
-    },
-    "Iron Beam": {
-      country: "Israel",
-      type: "High Energy Laser",
-      specifications: {
-        "Power Output": "100 kW",
-        Wavelength: "1070 nm",
-        Range: "7 km",
-        "Beam Quality": "M² < 1.5",
-        "Tracking Speed": "100°/s",
-        "Engagement Time": "3-5 seconds",
-        "Target Types": "UAVs, Rockets, Mortars",
-      },
-      capabilities: [
-        "Intercept short-range threats",
-        "Counter-drone operations",
-        "Rocket and mortar defense",
-        "Cost-effective engagement",
-      ],
-      status: "Testing",
-      location: "Multiple sites",
-      yearDeployed: "2025 (Expected)",
-    },
-    "LAWS (Laser Weapon System)": {
-      country: "United States",
-      type: "Solid State Laser",
-      specifications: {
-        "Power Output": "30 kW",
-        Wavelength: "1064 nm",
-        Range: "1.6 km",
-        Platform: "Naval vessels",
-        "Beam Diameter": "10 cm",
-        Precision: "< 1 mrad",
-        "Target Types": "UAVs, Small boats",
-      },
-      capabilities: ["Naval point defense", "Anti-drone operations", "Small boat interdiction", "Precision targeting"],
-      status: "Operational",
-      location: "USS Ponce, USS Portland",
-      yearDeployed: "2014",
-    },
-  }
-
-  const algorithmDetails = {
-    "Adaptive Optics Control": {
+  const algorithms = {
+    "Adaptive Optics": {
       description: "Compensates for atmospheric disturbances in laser beam propagation",
-      steps: [
-        "1. Wavefront Sensing: Measure atmospheric distortions using Shack-Hartmann sensors",
-        "2. Error Calculation: Compare measured wavefront with reference flat wavefront",
-        "3. Control Signal Generation: Calculate correction signals for deformable mirror",
-        "4. Mirror Actuation: Apply corrections using piezoelectric actuators",
-        "5. Feedback Loop: Continuously monitor and adjust at 1000+ Hz rate",
-        "6. Beam Quality Assessment: Measure Strehl ratio and beam quality factor",
-      ],
-      applications: ["HEL systems", "Atmospheric compensation", "Target illumination"],
       complexity: "High",
-      implementation: "Real-time DSP with FPGA acceleration",
+      applications: ["HEL systems", "Astronomical telescopes", "Free-space optical communication"],
+      steps: [
+        "Wavefront sensing using Shack-Hartmann sensor to detect atmospheric distortions",
+        "Real-time analysis of wavefront aberrations using Zernike polynomials",
+        "Control algorithm calculates required deformable mirror corrections",
+        "Actuator commands sent to deformable mirror elements (typically 100-1000 actuators)",
+        "Closed-loop feedback system operates at 1-10 kHz update rates",
+        "Continuous optimization maintains beam quality and focus accuracy",
+      ],
+      implementation: "Requires high-speed processors, precision actuators, and advanced sensors",
     },
     "Kalman Filtering": {
       description: "Optimal estimation algorithm for target tracking and prediction",
-      steps: [
-        "1. State Prediction: Predict target position using motion model x(k|k-1) = F*x(k-1|k-1)",
-        "2. Covariance Prediction: Update uncertainty P(k|k-1) = F*P(k-1|k-1)*F' + Q",
-        "3. Measurement Update: Incorporate sensor data z(k) = H*x(k) + v(k)",
-        "4. Kalman Gain: Calculate optimal gain K(k) = P(k|k-1)*H'/(H*P(k|k-1)*H' + R)",
-        "5. State Correction: Update estimate x(k|k) = x(k|k-1) + K(k)*(z(k) - H*x(k|k-1))",
-        "6. Covariance Update: Reduce uncertainty P(k|k) = (I - K(k)*H)*P(k|k-1)",
-      ],
-      applications: ["Target tracking", "Missile guidance", "Sensor fusion"],
       complexity: "Medium",
-      implementation: "Matrix operations with numerical stability considerations",
+      applications: ["Target tracking", "Navigation", "Sensor fusion"],
+      steps: [
+        "Initialize state vector (position, velocity) and covariance matrices",
+        "Prediction step: Estimate next state using motion model and process noise",
+        "Measurement update: Incorporate new sensor data with measurement noise",
+        "Calculate Kalman gain to optimally weight prediction vs measurement",
+        "Update state estimate and error covariance based on new information",
+        "Iterate process for continuous tracking with uncertainty quantification",
+      ],
+      implementation: "Standard linear algebra operations, suitable for real-time implementation",
     },
     "Beam Steering": {
       description: "Precise control of laser beam direction for target engagement",
+      complexity: "High",
+      applications: ["Laser weapons", "LIDAR", "Optical communications"],
       steps: [
-        "1. Target Acquisition: Identify and lock onto target using EO/IR sensors",
-        "2. Lead Angle Calculation: Predict target future position based on velocity",
-        "3. Gimbal Control: Calculate required azimuth and elevation angles",
-        "4. Fine Steering: Use fast steering mirror for sub-milliradian corrections",
-        "5. Beam Alignment: Ensure beam axis aligns with target line-of-sight",
-        "6. Tracking Maintenance: Continuously update pointing based on target motion",
+        "Target acquisition and coordinate transformation to beam director frame",
+        "Calculate required gimbal angles for coarse pointing (±0.1 mrad accuracy)",
+        "Fine steering using fast steering mirror for precision pointing (±10 μrad)",
+        "Compensate for platform motion, wind, and thermal effects",
+        "Implement lead-ahead algorithms for moving target engagement",
+        "Continuous tracking with disturbance rejection and stability control",
       ],
-      applications: ["Precision targeting", "Moving target engagement", "Beam positioning"],
+      implementation: "Multi-axis control systems with position/velocity feedback loops",
+    },
+    "Power Management": {
+      description: "Optimal distribution and control of electrical power in DEW systems",
       complexity: "Medium",
-      implementation: "PID controllers with feedforward compensation",
+      applications: ["Laser systems", "HPM weapons", "Radar systems"],
+      steps: [
+        "Monitor power generation capacity and current system demands",
+        "Prioritize critical subsystems (cooling, beam generation, sensors)",
+        "Implement load shedding algorithms for power-limited scenarios",
+        "Optimize pulse timing and duty cycles for maximum effectiveness",
+        "Thermal management integration to prevent overheating damage",
+        "Fault detection and automatic reconfiguration for system protection",
+      ],
+      implementation: "Distributed control architecture with real-time monitoring",
+    },
+    "Target Classification": {
+      description: "Automated identification and classification of potential targets",
+      complexity: "High",
+      applications: ["Air defense", "Autonomous weapons", "Surveillance"],
+      steps: [
+        "Multi-sensor data fusion (radar, EO/IR, acoustic signatures)",
+        "Feature extraction using signal processing and image analysis",
+        "Machine learning classification using trained neural networks",
+        "Threat assessment based on target characteristics and behavior",
+        "Rules of engagement verification and human oversight integration",
+        "Engagement decision with confidence metrics and uncertainty bounds",
+      ],
+      implementation: "AI/ML frameworks with extensive training datasets required",
+    },
+    "Atmospheric Modeling": {
+      description: "Prediction of atmospheric effects on directed energy propagation",
+      complexity: "High",
+      applications: ["Laser weapons", "RF systems", "Weather prediction"],
+      steps: [
+        "Collect meteorological data (temperature, humidity, pressure, wind)",
+        "Model atmospheric layers and refractive index variations",
+        "Calculate beam propagation through turbulent atmosphere",
+        "Predict scattering, absorption, and thermal blooming effects",
+        "Estimate beam quality degradation and power loss",
+        "Provide real-time corrections for adaptive optics systems",
+      ],
+      implementation: "Computational fluid dynamics and electromagnetic propagation codes",
     },
   }
 
   const strategicAnalysis = {
     threats: [
-      "Neighboring country A developing anti-satellite capabilities",
-      "Neighboring country B investing heavily in HPM systems",
-      "Cross-border electronic warfare capabilities",
-      "Space-based DEW deployment concerns",
-      "Asymmetric warfare applications",
+      {
+        region: "Northern Border",
+        level: "High",
+        systems: ["Mobile HEL platforms", "Electronic warfare systems"],
+        countermeasures: ["Adaptive optics", "Frequency agility", "Hardened electronics"],
+      },
+      {
+        region: "Western Border",
+        level: "Medium",
+        systems: ["Anti-drone systems", "Point defense lasers"],
+        countermeasures: ["Multi-spectral sensors", "Rapid deployment", "Network integration"],
+      },
+      {
+        region: "Eastern Border",
+        level: "Medium-High",
+        systems: ["Naval laser systems", "Coastal defense"],
+        countermeasures: ["Maritime platforms", "All-weather capability", "Extended range"],
+      },
     ],
-    opportunities: [
-      "Indigenous technology development",
-      "Strategic partnerships with allied nations",
-      "Dual-use civilian applications",
-      "Export potential for defensive systems",
-      "Technology transfer agreements",
-    ],
-    challenges: [
-      "Power generation and storage",
-      "Atmospheric interference",
-      "Cost-effectiveness vs conventional weapons",
-      "International regulations and treaties",
-      "Technological complexity",
+    recommendations: [
+      "Accelerate DURGA-II development and deployment",
+      "Establish DEW testing and evaluation facilities",
+      "Develop indigenous power generation and cooling systems",
+      "Create joint service doctrine for DEW employment",
+      "Invest in counter-DEW technologies and tactics",
     ],
   }
 
+  const researchData = {
+    institutions: [
+      { name: "DRDO", projects: 8, budget: "$300M", focus: "Military applications" },
+      { name: "IIT Delhi", projects: 3, budget: "$50M", focus: "Laser physics" },
+      { name: "IISc Bangalore", projects: 4, budget: "$75M", focus: "Optics & photonics" },
+      { name: "BARC", projects: 2, budget: "$100M", focus: "High power systems" },
+    ],
+    timeline: [
+      { year: 2020, milestone: "KALI-5000 operational" },
+      { year: 2022, milestone: "DURGA-II prototype testing" },
+      { year: 2024, milestone: "Naval laser system trials" },
+      { year: 2026, milestone: "Operational deployment target" },
+    ],
+  }
+
+  // Chart data
+  const capabilityData = globalStatus.map((country) => ({
+    country: country.country,
+    capability: country.capability,
+    investment: Number.parseInt(country.investment.replace(/[$BM]/g, "")),
+  }))
+
+  const threatLevelData = strategicAnalysis.threats.map((threat) => ({
+    region: threat.region,
+    level: threat.level === "High" ? 90 : threat.level === "Medium-High" ? 70 : 50,
+  }))
+
+  const dewTypeData = dewTypes.map((type, index) => ({
+    name: type.name,
+    applications: type.applications.length,
+    fill: ["#8884d8", "#82ca9d", "#ffc658"][index],
+  }))
+
+  const timelineData = researchData.timeline.map((item) => ({
+    year: item.year,
+    progress: (item.year - 2020) * 25,
+  }))
+
+  const radarData = [
+    { subject: "Power", A: 80, B: 95, fullMark: 100 },
+    { subject: "Range", A: 70, B: 85, fullMark: 100 },
+    { subject: "Accuracy", A: 85, B: 90, fullMark: 100 },
+    { subject: "Mobility", A: 60, B: 75, fullMark: 100 },
+    { subject: "Cost", A: 90, B: 60, fullMark: 100 },
+    { subject: "Reliability", A: 75, B: 85, fullMark: 100 },
+  ]
+
   const downloadData = () => {
     const data = {
-      dewTypes,
-      countryCapabilities,
-      detailedSystems,
-      algorithmDetails,
-      strategicAnalysis,
       timestamp: new Date().toISOString(),
       version: "1.0",
+      dewTypes,
+      globalStatus,
+      algorithms,
+      strategicAnalysis,
+      researchData,
+      metadata: {
+        generatedBy: "DRDO DEW Dashboard",
+        project: "Directed Energy Weapons Analysis",
+        classification: "For Research Purposes Only",
+      },
     }
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = "dew-dashboard-data.json"
+    a.download = `dew-analysis-${new Date().toISOString().split("T")[0]}.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
 
+  const generateReport = () => {
+    setShowReport(true)
+  }
+
+  const ReportContent = () => (
+    <div className="space-y-6 max-h-96 overflow-y-auto">
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Executive Summary</h3>
+        <p className="text-sm text-gray-600">
+          Directed Energy Weapons represent a paradigm shift in modern warfare, offering precision, speed-of-light
+          engagement, and cost-effective solutions for various defense scenarios. India's current capabilities, led by
+          DRDO's KALI system, position the nation competitively in this emerging domain.
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Technology Assessment</h3>
+        <ul className="text-sm text-gray-600 space-y-1">
+          <li>• High Energy Lasers: Most mature technology with operational systems globally</li>
+          <li>• High Power Microwaves: Effective for electronic warfare and area denial</li>
+          <li>• Particle Beams: Emerging technology with space-based applications</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Strategic Analysis</h3>
+        <p className="text-sm text-gray-600">
+          Regional threat assessment indicates varying levels of DEW deployment across borders. Northern regions show
+          highest threat levels requiring immediate countermeasure development.
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Capability Gaps</h3>
+        <ul className="text-sm text-gray-600 space-y-1">
+          <li>• Power generation and thermal management systems</li>
+          <li>• All-weather operational capability</li>
+          <li>• Mobile platform integration</li>
+          <li>• Counter-DEW technologies</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Recommendations</h3>
+        <ul className="text-sm text-gray-600 space-y-1">
+          <li>• Accelerate DURGA-II development timeline</li>
+          <li>• Establish dedicated DEW testing facilities</li>
+          <li>• Develop indigenous supply chain for critical components</li>
+          <li>• Create joint service operational doctrine</li>
+          <li>• Invest in defensive countermeasures research</li>
+        </ul>
+      </div>
+    </div>
+  )
+
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white">
+        <div className="container mx-auto p-6">
           {/* Header */}
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Directed Energy Weapons
-            </h1>
-            <p className="text-xl text-slate-300">Comprehensive Literature Survey & Strategic Analysis</p>
-            <div className="flex justify-center space-x-4 flex-wrap">
-              <Badge variant="outline" className="text-blue-400 border-blue-400">
-                DRDO ISSA Project
-              </Badge>
-              <Badge variant="outline" className="text-green-400 border-green-400">
-                Classification: Research
-              </Badge>
-              <button
-                onClick={() => setShowReport(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-              >
-                📄 Generate Report
-              </button>
-              <button
-                onClick={downloadData}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-              >
-                💾 Download Data
-              </button>
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Directed Energy Weapons Dashboard
+              </h1>
+              <p className="text-gray-300 mt-2">DRDO ISSA Internship Project - Comprehensive Analysis & Research</p>
+            </div>
+            <div className="flex gap-4">
+              <Button onClick={generateReport} className="bg-blue-600 hover:bg-blue-700">
+                <FileText className="w-4 h-4 mr-2" />
+                Generate Report
+              </Button>
+              <Button onClick={downloadData} className="bg-green-600 hover:bg-green-700">
+                <Download className="w-4 h-4 mr-2" />
+                Download Data
+              </Button>
             </div>
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-6 bg-slate-800/50">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600">
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="types" className="data-[state=active]:bg-blue-600">
-                Types & Tech
-              </TabsTrigger>
-              <TabsTrigger value="global" className="data-[state=active]:bg-blue-600">
-                Global Status
-              </TabsTrigger>
-              <TabsTrigger value="methods" className="data-[state=active]:bg-blue-600">
-                Methods
-              </TabsTrigger>
-              <TabsTrigger value="strategic" className="data-[state=active]:bg-blue-600">
-                Strategic
-              </TabsTrigger>
-              <TabsTrigger value="research" className="data-[state=active]:bg-blue-600">
-                Research
-              </TabsTrigger>
+            <TabsList className="grid w-full grid-cols-6 bg-slate-800">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="types">Types & Tech</TabsTrigger>
+              <TabsTrigger value="global">Global Status</TabsTrigger>
+              <TabsTrigger value="methods">Methods</TabsTrigger>
+              <TabsTrigger value="strategic">Strategic Analysis</TabsTrigger>
+              <TabsTrigger value="research">Research Ecosystem</TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="bg-slate-800/50 border-slate-700">
+                <Card className="bg-slate-800 border-slate-700">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-300">Active DEW Programs</CardTitle>
-                    <Zap className="h-4 w-4 text-yellow-400" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-white">150+</div>
-                    <p className="text-xs text-slate-400">Worldwide active projects</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-slate-800/50 border-slate-700">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-300">Investment (2024)</CardTitle>
-                    <TrendingUp className="h-4 w-4 text-green-400" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-white">$12.8B</div>
-                    <p className="text-xs text-slate-400">Global R&D spending</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-slate-800/50 border-slate-700">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-300">Operational Systems</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-300">Global Systems</CardTitle>
                     <Shield className="h-4 w-4 text-blue-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">45</div>
-                    <p className="text-xs text-slate-400">Deployed worldwide</p>
+                    <div className="text-2xl font-bold text-white">47</div>
+                    <p className="text-xs text-gray-400">Operational & Development</p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-slate-800/50 border-slate-700">
+                <Card className="bg-slate-800 border-slate-700">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-300">India's Position</CardTitle>
-                    <MapPin className="h-4 w-4 text-orange-400" />
+                    <CardTitle className="text-sm font-medium text-gray-300">Total Investment</CardTitle>
+                    <TrendingUp className="h-4 w-4 text-green-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-white">$10B+</div>
+                    <p className="text-xs text-gray-400">Global R&D Spending</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-slate-800 border-slate-700">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-300">India's Rank</CardTitle>
+                    <Target className="h-4 w-4 text-yellow-400" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-white">#4</div>
-                    <p className="text-xs text-slate-400">Global ranking</p>
+                    <p className="text-xs text-gray-400">Global Capability</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-slate-800 border-slate-700">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-300">Active Projects</CardTitle>
+                    <BookOpen className="h-4 w-4 text-purple-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-white">70+</div>
+                    <p className="text-xs text-gray-400">Worldwide</p>
                   </CardContent>
                 </Card>
               </div>
 
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Database className="h-5 w-5" />
-                    DEW Technology Maturity Overview
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {dewTypes.map((weapon) => (
-                    <div key={weapon.id} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-slate-300">{weapon.name}</span>
-                        <span className="text-sm text-slate-400">{weapon.effectiveness}% Maturity</span>
-                      </div>
-                      <Progress value={weapon.effectiveness} className="h-2" />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-slate-800 border-slate-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Global Capability Comparison</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ChartContainer
+                      config={{
+                        capability: { label: "Capability", color: "#8884d8" },
+                        investment: { label: "Investment", color: "#82ca9d" },
+                      }}
+                      className="h-[300px]"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={capabilityData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="country" />
+                          <YAxis />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Bar dataKey="capability" fill="#8884d8" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-slate-800 border-slate-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">DEW Technology Distribution</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ChartContainer
+                      config={{
+                        applications: { label: "Applications", color: "#8884d8" },
+                      }}
+                      className="h-[300px]"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={dewTypeData}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="applications"
+                          >
+                            {dewTypeData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.fill} />
+                            ))}
+                          </Pie>
+                          <ChartTooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Alert className="bg-yellow-900 border-yellow-600">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription className="text-yellow-100">
+                  <strong>Strategic Note:</strong> Directed Energy Weapons are rapidly evolving from experimental to
+                  operational status. India must accelerate development to maintain strategic parity in this critical
+                  domain.
+                </AlertDescription>
+              </Alert>
             </TabsContent>
 
-            {/* Types & Technology Tab */}
+            {/* Types & Tech Tab */}
             <TabsContent value="types" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="bg-slate-800/50 border-slate-700">
-                  <CardHeader>
-                    <CardTitle className="text-white">DEW Categories</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {dewTypes.map((weapon) => (
-                      <button
-                        key={weapon.id}
-                        onClick={() => setSelectedWeapon(weapon.id)}
-                        className={`w-full text-left p-3 rounded-lg transition-colors ${
-                          selectedWeapon === weapon.id
-                            ? "bg-blue-600 text-white"
-                            : "bg-slate-700/50 text-slate-300 hover:bg-slate-700"
-                        }`}
-                      >
-                        <div className="font-medium">{weapon.name}</div>
-                        <div className="text-sm opacity-75">Range: {weapon.range}</div>
-                      </button>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                <Card className="lg:col-span-2 bg-slate-800/50 border-slate-700">
-                  <CardHeader>
-                    <CardTitle className="text-white">
-                      {dewTypes.find((w) => w.id === selectedWeapon)?.name} Details
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {(() => {
-                      const weapon = dewTypes.find((w) => w.id === selectedWeapon)
-                      if (!weapon) return null
-
-                      return (
-                        <>
-                          <p className="text-slate-300">{weapon.description}</p>
-
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <h4 className="font-medium text-white mb-2">Specifications</h4>
-                              <div className="space-y-1 text-sm text-slate-300">
-                                <div>Power: {weapon.power}</div>
-                                <div>Range: {weapon.range}</div>
-                                <div>Effectiveness: {weapon.effectiveness}%</div>
-                              </div>
-                            </div>
-
-                            <div>
-                              <h4 className="font-medium text-white mb-2">Applications</h4>
-                              <div className="space-y-1">
-                                {weapon.applications.map((app, idx) => (
-                                  <Badge key={idx} variant="outline" className="text-xs mr-1 mb-1">
-                                    {app}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div>
-                            <h4 className="font-medium text-white mb-2">Key Algorithms</h4>
-                            <div className="space-y-1">
-                              {weapon.algorithms.map((algo, idx) => (
-                                <Badge
-                                  key={idx}
-                                  variant="secondary"
-                                  className="text-xs mr-1 mb-1 bg-purple-600/20 text-purple-300"
-                                >
-                                  {algo}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </>
-                      )
-                    })()}
-                  </CardContent>
-                </Card>
+              <div className="grid gap-6">
+                {dewTypes.map((type, index) => (
+                  <Card key={index} className="bg-slate-800 border-slate-700">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-yellow-400" />
+                        {type.name}
+                      </CardTitle>
+                      <CardDescription className="text-gray-300">{type.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <h4 className="font-semibold text-blue-400 mb-2">Specifications</h4>
+                          <p className="text-sm text-gray-300">Power: {type.power}</p>
+                          <p className="text-sm text-gray-300">Range: {type.range}</p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-green-400 mb-2">Advantages</h4>
+                          <ul className="text-sm text-gray-300 space-y-1">
+                            {type.advantages.map((adv, i) => (
+                              <li key={i}>• {adv}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-red-400 mb-2">Limitations</h4>
+                          <ul className="text-sm text-gray-300 space-y-1">
+                            {type.limitations.map((lim, i) => (
+                              <li key={i}>• {lim}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-purple-400 mb-2">Applications</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {type.applications.map((app, i) => (
+                            <Badge key={i} variant="secondary" className="bg-purple-900 text-purple-100">
+                              {app}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
 
-              <Card className="bg-slate-800/50 border-slate-700">
+              <Card className="bg-slate-800 border-slate-700">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    Technical Specifications Comparison
-                  </CardTitle>
+                  <CardTitle className="text-white">Technology Comparison Matrix</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-600">
-                          <th className="text-left p-2 text-slate-300">System</th>
-                          <th className="text-left p-2 text-slate-300">Power Output</th>
-                          <th className="text-left p-2 text-slate-300">Effective Range</th>
-                          <th className="text-left p-2 text-slate-300">Target Types</th>
-                          <th className="text-left p-2 text-slate-300">Deployment</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-slate-300">
-                        <tr className="border-b border-slate-700">
-                          <td className="p-2 font-medium">HEL Systems</td>
-                          <td className="p-2">10kW - 300kW</td>
-                          <td className="p-2">1-20 km</td>
-                          <td className="p-2">UAVs, Missiles, Sensors</td>
-                          <td className="p-2">Ground, Naval, Airborne</td>
-                        </tr>
-                        <tr className="border-b border-slate-700">
-                          <td className="p-2 font-medium">HPM Systems</td>
-                          <td className="p-2">100MW - 1GW</td>
-                          <td className="p-2">0.5-10 km</td>
-                          <td className="p-2">Electronics, Communications</td>
-                          <td className="p-2">Ground, Vehicle-mounted</td>
-                        </tr>
-                        <tr className="border-b border-slate-700">
-                          <td className="p-2 font-medium">Particle Beam</td>
-                          <td className="p-2">1-100 GeV</td>
-                          <td className="p-2">Space-based</td>
-                          <td className="p-2">Satellites, ICBMs</td>
-                          <td className="p-2">Space platforms</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  <ChartContainer
+                    config={{
+                      A: { label: "Current Tech", color: "#8884d8" },
+                      B: { label: "Next Gen", color: "#82ca9d" },
+                    }}
+                    className="h-[400px]"
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart data={radarData}>
+                        <PolarGrid />
+                        <PolarAngleAxis dataKey="subject" />
+                        <PolarRadiusAxis angle={90} domain={[0, 100]} />
+                        <Radar name="Current Tech" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                        <Radar name="Next Gen" dataKey="B" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
+                        <ChartTooltip />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
                 </CardContent>
               </Card>
             </TabsContent>
 
             {/* Global Status Tab */}
             <TabsContent value="global" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {countryCapabilities.map((country, idx) => (
-                  <Card key={idx} className="bg-slate-800/50 border-slate-700">
+              <div className="grid gap-6">
+                {globalStatus.map((country, index) => (
+                  <Card key={index} className="bg-slate-800 border-slate-700">
                     <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Globe className="h-5 w-5" />
-                        {country.country}
+                      <CardTitle className="text-white flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <Globe className="w-5 h-5 text-blue-400" />
+                          {country.country}
+                        </span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">
+                          {country.capability}% Capability
+                        </Badge>
                       </CardTitle>
-                      <CardDescription className="text-slate-400">Focus: {country.focus}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-300">Development</span>
-                          <span className="text-slate-400">{country.development}%</span>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-400">Investment</p>
+                          <p className="text-lg font-semibold text-white">{country.investment}</p>
                         </div>
-                        <Progress value={country.development} className="h-2" />
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-300">Operational</span>
-                          <span className="text-slate-400">{country.operational}%</span>
+                        <div>
+                          <p className="text-sm text-gray-400">Active Projects</p>
+                          <p className="text-lg font-semibold text-white">{country.projects}</p>
                         </div>
-                        <Progress value={country.operational} className="h-2" />
+                        <div>
+                          <p className="text-sm text-gray-400">Capability Level</p>
+                          <Progress value={country.capability} className="mt-2" />
+                        </div>
                       </div>
-
                       <div>
-                        <h4 className="font-medium text-white mb-2">Key Systems</h4>
-                        <div className="space-y-1">
-                          {country.systems.map((system, sIdx) => (
-                            <button
-                              key={sIdx}
-                              onClick={() => {
-                                setSelectedSystem(system)
-                                setShowSystemDetails(true)
-                              }}
-                              className="text-xs mr-1 mb-1 text-blue-300 border border-blue-400 px-2 py-1 rounded hover:bg-blue-600 hover:text-white transition-colors"
+                        <h4 className="font-semibold text-blue-400 mb-2">Key Systems</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {country.systems.map((system, i) => (
+                            <Badge
+                              key={i}
+                              variant="secondary"
+                              className="bg-blue-900 text-blue-100 cursor-pointer hover:bg-blue-800"
+                              onClick={() => setSelectedSystem(system)}
                             >
-                              {system}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="font-medium text-white mb-2">Research Organizations</h4>
-                        <div className="text-sm text-slate-300 space-y-1">
-                          {country.research.map((org, oIdx) => (
-                            <div key={oIdx}>• {org}</div>
+                              {system.name} ({system.type})
+                            </Badge>
                           ))}
                         </div>
                       </div>
@@ -575,433 +819,281 @@ export default function DEWDashboard() {
 
             {/* Methods Tab */}
             <TabsContent value="methods" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="bg-slate-800/50 border-slate-700">
+              <div className="grid gap-6">
+                <Card className="bg-slate-800 border-slate-700">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Cpu className="h-5 w-5" />
-                      Core Algorithms & Methods
-                    </CardTitle>
+                    <CardTitle className="text-white">Key Algorithms & Methods</CardTitle>
+                    <CardDescription className="text-gray-300">
+                      Critical algorithms powering modern directed energy weapon systems
+                    </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-white mb-2">Beam Control Algorithms</h4>
-                        <ul className="text-sm text-slate-300 space-y-1 ml-4">
-                          <li>
-                            <button
-                              onClick={() => {
-                                setSelectedAlgorithm("Adaptive Optics Control")
-                                setShowAlgorithmDetails(true)
-                              }}
-                              className="text-blue-400 hover:text-blue-300 underline"
-                            >
-                              • Adaptive Optics Control
-                            </button>
-                          </li>
-                          <li>• Phase Conjugation</li>
-                          <li>• Wavefront Sensing</li>
-                          <li>• Atmospheric Turbulence Compensation</li>
-                          <li>• Multi-aperture Coherent Combining</li>
-                        </ul>
-                      </div>
-
-                      <Separator className="bg-slate-600" />
-
-                      <div>
-                        <h4 className="font-medium text-white mb-2">Target Acquisition</h4>
-                        <ul className="text-sm text-slate-300 space-y-1 ml-4">
-                          <li>
-                            <button
-                              onClick={() => {
-                                setSelectedAlgorithm("Kalman Filtering")
-                                setShowAlgorithmDetails(true)
-                              }}
-                              className="text-blue-400 hover:text-blue-300 underline"
-                            >
-                              • Kalman Filtering
-                            </button>
-                          </li>
-                          <li>• Extended Kalman Filter (EKF)</li>
-                          <li>• Particle Filter Tracking</li>
-                          <li>• Multi-target Tracking (MTT)</li>
-                          <li>• SLAM-based Navigation</li>
-                        </ul>
-                      </div>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {Object.entries(algorithms).map(([name, details]) => (
+                        <Card key={name} className="bg-slate-700 border-slate-600">
+                          <CardHeader>
+                            <CardTitle className="text-sm text-white flex items-center justify-between">
+                              <span
+                                className="cursor-pointer text-blue-400 hover:text-blue-300"
+                                onClick={() => setSelectedAlgorithm({ name, ...details })}
+                              >
+                                {name}
+                              </span>
+                              <Badge
+                                variant={
+                                  details.complexity === "High"
+                                    ? "destructive"
+                                    : details.complexity === "Medium"
+                                      ? "default"
+                                      : "secondary"
+                                }
+                              >
+                                {details.complexity}
+                              </Badge>
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-xs text-gray-300 mb-3">{details.description}</p>
+                            <div className="space-y-2">
+                              <p className="text-xs font-semibold text-purple-400">Applications:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {details.applications.map((app, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs">
+                                    {app}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-slate-800/50 border-slate-700">
+                <Card className="bg-slate-800 border-slate-700">
                   <CardHeader>
-                    <CardTitle className="text-white">Power & Thermal Management</CardTitle>
+                    <CardTitle className="text-white">Mathematical Foundations</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <h4 className="font-medium text-white mb-2">Power Systems</h4>
-                        <ul className="text-sm text-slate-300 space-y-1 ml-4">
-                          <li>• Pulsed Power Networks</li>
-                          <li>• Capacitor Bank Management</li>
-                          <li>• Flywheel Energy Storage</li>
-                          <li>• Superconducting Magnetic Energy Storage</li>
-                          <li>• Battery Management Systems</li>
-                        </ul>
+                        <h4 className="font-semibold text-blue-400 mb-2">Laser Beam Propagation</h4>
+                        <div className="bg-slate-900 p-3 rounded text-sm font-mono text-gray-300">
+                          <p>{"I(r,z) = I₀ × (w₀/w(z))² × exp(-2r²/w(z)²)"}</p>
+                          <p className="text-xs mt-1 text-gray-400">Gaussian beam intensity distribution</p>
+                        </div>
                       </div>
-
-                      <Separator className="bg-slate-600" />
-
                       <div>
-                        <h4 className="font-medium text-white mb-2">Thermal Control</h4>
-                        <ul className="text-sm text-slate-300 space-y-1 ml-4">
-                          <li>• Active Cooling Systems</li>
-                          <li>• Heat Exchanger Design</li>
-                          <li>• Thermal Interface Materials</li>
-                          <li>• Cryogenic Cooling</li>
-                          <li>• Phase Change Materials</li>
-                        </ul>
+                        <h4 className="font-semibold text-green-400 mb-2">Atmospheric Attenuation</h4>
+                        <div className="bg-slate-900 p-3 rounded text-sm font-mono text-gray-300">
+                          <p>{"P(z) = P₀ × exp(-αz)"}</p>
+                          <p className="text-xs mt-1 text-gray-400">Beer-Lambert law for power loss</p>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-yellow-400 mb-2">Thermal Blooming</h4>
+                        <div className="bg-slate-900 p-3 rounded text-sm font-mono text-gray-300">
+                          <p>{"N = (dn/dT) × α × I × L / (ρ × Cp × v)"}</p>
+                          <p className="text-xs mt-1 text-gray-400">Distortion parameter</p>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-purple-400 mb-2">Target Damage</h4>
+                        <div className="bg-slate-900 p-3 rounded text-sm font-mono text-gray-300">
+                          <p>{"H = ∫ I(t) dt"}</p>
+                          <p className="text-xs mt-1 text-gray-400">Fluence for material damage</p>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
-
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Mathematical Models & Equations</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-medium text-white mb-3">Laser Propagation</h4>
-                      <div className="bg-slate-900/50 p-4 rounded-lg text-sm text-slate-300 font-mono">
-                        <div>{"Beam Quality: M² = (θ × w₀) / λ"}</div>
-                        <div className="mt-2">{"Rayleigh Range: z₀ = πw₀²/λ"}</div>
-                        <div className="mt-2">{"Power Density: I = P/(πw²)"}</div>
-                        <div className="mt-2">{"Atmospheric Loss: τ = exp(-αR)"}</div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium text-white mb-3">HPM Propagation</h4>
-                      <div className="bg-slate-900/50 p-4 rounded-lg text-sm text-slate-300 font-mono">
-                        <div>{"Field Strength: E = √(30P/r²)"}</div>
-                        <div className="mt-2">{"Antenna Gain: G = 4πA/λ²"}</div>
-                        <div className="mt-2">{"EIRP: P_eirp = P_t × G"}</div>
-                        <div className="mt-2">{"Path Loss: L = (4πr/λ)²"}</div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </TabsContent>
 
-            {/* Strategic Tab */}
+            {/* Strategic Analysis Tab */}
             <TabsContent value="strategic" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="bg-red-900/20 border-red-700">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-red-400" />
-                      Threat Assessment
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="h-48">
-                      <div className="space-y-2">
-                        {strategicAnalysis.threats.map((threat, idx) => (
-                          <div key={idx} className="p-2 bg-red-900/30 rounded text-sm text-red-100">
-                            {threat}
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-green-900/20 border-green-700">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-green-400" />
-                      Opportunities
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="h-48">
-                      <div className="space-y-2">
-                        {strategicAnalysis.opportunities.map((opp, idx) => (
-                          <div key={idx} className="p-2 bg-green-900/30 rounded text-sm text-green-100">
-                            {opp}
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-yellow-900/20 border-yellow-700">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Settings className="h-5 w-5 text-yellow-400" />
-                      Challenges
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="h-48">
-                      <div className="space-y-2">
-                        {strategicAnalysis.challenges.map((challenge, idx) => (
-                          <div key={idx} className="p-2 bg-yellow-900/30 rounded text-sm text-yellow-100">
-                            {challenge}
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Regional Security Analysis</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-medium text-white mb-3">Neighboring Country A (Eastern Border)</h4>
-                      <div className="space-y-2 text-sm text-slate-300">
-                        <div>• Advanced HPM development program</div>
-                        <div>• Anti-satellite laser systems operational</div>
-                        <div>• Estimated 15+ DEW research facilities</div>
-                        <div>• Focus on space-based platforms</div>
-                        <div>• Electronic warfare integration</div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium text-white mb-3">Neighboring Country B (Western Border)</h4>
-                      <div className="space-y-2 text-sm text-slate-300">
-                        <div>• Tactical laser systems development</div>
-                        <div>• Counter-drone DEW capabilities</div>
-                        <div>• Limited but growing investment</div>
-                        <div>• Focus on defensive applications</div>
-                        <div>• Technology acquisition efforts</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-slate-600" />
-
-                  <div>
-                    <h4 className="font-medium text-white mb-3">Strategic Implications for India</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-300">
-                      <div>
-                        <strong className="text-white">Defensive Priorities:</strong>
-                        <ul className="mt-1 space-y-1 ml-4">
-                          <li>• Border surveillance systems</li>
-                          <li>• Anti-drone networks</li>
-                          <li>• Satellite protection</li>
-                          <li>• Electronic warfare countermeasures</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <strong className="text-white">Offensive Capabilities:</strong>
-                        <ul className="mt-1 space-y-1 ml-4">
-                          <li>• Precision strike systems</li>
-                          <li>• Communication disruption</li>
-                          <li>• Area denial weapons</li>
-                          <li>• Counter-electronics warfare</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Research Tab */}
-            <TabsContent value="research" className="space-y-6">
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader>
-                  <CardTitle className="text-white">India's DEW Research Ecosystem</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-white">DRDO Labs</h4>
-                      <div className="text-sm text-slate-300 space-y-1">
-                        <div>• LASTEC (Laser Science & Technology)</div>
-                        <div>• LRDE (Electronics & Radar)</div>
-                        <div>• SSPL (Solid State Physics)</div>
-                        <div>• TBRL (Terminal Ballistics)</div>
-                        <div>• ASL (Armament Systems)</div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-white">Academic Institutions</h4>
-                      <div className="text-sm text-slate-300 space-y-1">
-                        <div>• IIT Delhi (Photonics)</div>
-                        <div>• IIT Kanpur (Laser Technology)</div>
-                        <div>• IISc Bangalore (Optics)</div>
-                        <div>• BARC (Atomic Research)</div>
-                        <div>• TIFR (Fundamental Research)</div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-white">Industry Partners</h4>
-                      <div className="text-sm text-slate-300 space-y-1">
-                        <div>• BEL (Electronics)</div>
-                        <div>• HAL (Aerospace)</div>
-                        <div>• L&T Defence</div>
-                        <div>• Tata Advanced Systems</div>
-                        <div>• Bharat Dynamics</div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="bg-slate-800/50 border-slate-700">
+                <Card className="bg-slate-800 border-slate-700">
                   <CardHeader>
-                    <CardTitle className="text-white">Current Research Projects</CardTitle>
+                    <CardTitle className="text-white">Regional Threat Assessment</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="p-3 bg-blue-900/30 rounded-lg">
-                        <h5 className="font-medium text-white">KALI (Kilo Ampere Linear Injector)</h5>
-                        <p className="text-sm text-slate-300 mt-1">
-                          High-power electron beam facility for EMP generation and testing
-                        </p>
-                        <div className="mt-2">
-                          <Badge variant="outline" className="text-xs text-blue-300 border-blue-400">
-                            Operational
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="p-3 bg-green-900/30 rounded-lg">
-                        <h5 className="font-medium text-white">DURGA-II</h5>
-                        <p className="text-sm text-slate-300 mt-1">Advanced pulsed power system for DEW applications</p>
-                        <div className="mt-2">
-                          <Badge variant="outline" className="text-xs text-green-300 border-green-400">
-                            Development
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="p-3 bg-purple-900/30 rounded-lg">
-                        <h5 className="font-medium text-white">Tactical HEL System</h5>
-                        <p className="text-sm text-slate-300 mt-1">Mobile laser weapon for counter-drone operations</p>
-                        <div className="mt-2">
-                          <Badge variant="outline" className="text-xs text-purple-300 border-purple-400">
-                            Testing
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
+                    <ChartContainer
+                      config={{
+                        level: { label: "Threat Level", color: "#ff6b6b" },
+                      }}
+                      className="h-[300px]"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={threatLevelData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="region" />
+                          <YAxis />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Bar dataKey="level" fill="#ff6b6b" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-slate-800/50 border-slate-700">
+                <Card className="bg-slate-800 border-slate-700">
                   <CardHeader>
-                    <CardTitle className="text-white">Future Roadmap</CardTitle>
+                    <CardTitle className="text-white">Development Timeline</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                        <div>
-                          <div className="font-medium text-white">2024-2026</div>
-                          <div className="text-sm text-slate-300">Tactical DEW deployment</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                        <div>
-                          <div className="font-medium text-white">2026-2028</div>
-                          <div className="text-sm text-slate-300">Strategic DEW systems</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-                        <div>
-                          <div className="font-medium text-white">2028-2030</div>
-                          <div className="text-sm text-slate-300">Space-based platforms</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
-                        <div>
-                          <div className="font-medium text-white">2030+</div>
-                          <div className="text-sm text-slate-300">Next-gen DEW technologies</div>
-                        </div>
-                      </div>
-                    </div>
+                    <ChartContainer
+                      config={{
+                        progress: { label: "Progress", color: "#4ecdc4" },
+                      }}
+                      className="h-[300px]"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={timelineData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="year" />
+                          <YAxis />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Line type="monotone" dataKey="progress" stroke="#4ecdc4" strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
                   </CardContent>
                 </Card>
               </div>
 
-              <Card className="bg-slate-800/50 border-slate-700">
+              <div className="grid gap-6">
+                {strategicAnalysis.threats.map((threat, index) => (
+                  <Card key={index} className="bg-slate-800 border-slate-700">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <MapPin className="w-5 h-5 text-red-400" />
+                          {threat.region}
+                        </span>
+                        <Badge variant={threat.level === "High" ? "destructive" : "default"}>
+                          {threat.level} Threat
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <h4 className="font-semibold text-red-400 mb-2">Identified Systems</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {threat.systems.map((system, i) => (
+                            <Badge key={i} variant="outline" className="text-red-300 border-red-400">
+                              {system}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-blue-400 mb-2">Recommended Countermeasures</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {threat.countermeasures.map((measure, i) => (
+                            <Badge key={i} variant="secondary" className="bg-blue-900 text-blue-100">
+                              {measure}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <Card className="bg-slate-800 border-slate-700">
                 <CardHeader>
-                  <CardTitle className="text-white">Research Recommendations</CardTitle>
+                  <CardTitle className="text-white">Strategic Recommendations</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-medium text-white mb-3">Priority Areas</h4>
-                      <ul className="text-sm text-slate-300 space-y-2">
-                        <li className="flex items-start space-x-2">
-                          <span className="text-blue-400">•</span>
-                          <span>High-power fiber laser development</span>
-                        </li>
-                        <li className="flex items-start space-x-2">
-                          <span className="text-blue-400">•</span>
-                          <span>Adaptive optics for atmospheric compensation</span>
-                        </li>
-                        <li className="flex items-start space-x-2">
-                          <span className="text-blue-400">•</span>
-                          <span>Compact power generation systems</span>
-                        </li>
-                        <li className="flex items-start space-x-2">
-                          <span className="text-blue-400">•</span>
-                          <span>AI-based target acquisition algorithms</span>
-                        </li>
-                        <li className="flex items-start space-x-2">
-                          <span className="text-blue-400">•</span>
-                          <span>Multi-spectral sensor integration</span>
-                        </li>
-                      </ul>
-                    </div>
+                  <div className="space-y-3">
+                    {strategicAnalysis.recommendations.map((rec, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white mt-0.5">
+                          {index + 1}
+                        </div>
+                        <p className="text-gray-300">{rec}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                    <div>
-                      <h4 className="font-medium text-white mb-3">Collaboration Opportunities</h4>
-                      <ul className="text-sm text-slate-300 space-y-2">
-                        <li className="flex items-start space-x-2">
-                          <span className="text-green-400">•</span>
-                          <span>International research partnerships</span>
-                        </li>
-                        <li className="flex items-start space-x-2">
-                          <span className="text-green-400">•</span>
-                          <span>Industry-academia joint programs</span>
-                        </li>
-                        <li className="flex items-start space-x-2">
-                          <span className="text-green-400">•</span>
-                          <span>Technology transfer initiatives</span>
-                        </li>
-                        <li className="flex items-start space-x-2">
-                          <span className="text-green-400">•</span>
-                          <span>Dual-use technology development</span>
-                        </li>
-                        <li className="flex items-start space-x-2">
-                          <span className="text-green-400">•</span>
-                          <span>Startup ecosystem engagement</span>
-                        </li>
-                      </ul>
+            {/* Research Ecosystem Tab */}
+            <TabsContent value="research" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-slate-800 border-slate-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Research Institutions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {researchData.institutions.map((inst, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded">
+                          <div>
+                            <h4 className="font-semibold text-white">{inst.name}</h4>
+                            <p className="text-sm text-gray-400">{inst.focus}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-semibold text-green-400">{inst.budget}</p>
+                            <p className="text-xs text-gray-400">{inst.projects} projects</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-slate-800 border-slate-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Development Milestones</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {researchData.timeline.map((item, index) => (
+                        <div key={index} className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
+                            {item.year}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-white">{item.milestone}</p>
+                            <Progress value={(item.year - 2020) * 25} className="mt-2" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="bg-slate-800 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Key Performance Indicators</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="text-center p-4 bg-slate-700 rounded">
+                      <Users className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                      <p className="text-2xl font-bold text-white">500+</p>
+                      <p className="text-sm text-gray-400">Researchers</p>
+                    </div>
+                    <div className="text-center p-4 bg-slate-700 rounded">
+                      <BookOpen className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                      <p className="text-2xl font-bold text-white">150+</p>
+                      <p className="text-sm text-gray-400">Publications</p>
+                    </div>
+                    <div className="text-center p-4 bg-slate-700 rounded">
+                      <Settings className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+                      <p className="text-2xl font-bold text-white">25</p>
+                      <p className="text-sm text-gray-400">Patents Filed</p>
+                    </div>
+                    <div className="text-center p-4 bg-slate-700 rounded">
+                      <Target className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                      <p className="text-2xl font-bold text-white">8</p>
+                      <p className="text-sm text-gray-400">Prototypes</p>
                     </div>
                   </div>
                 </CardContent>
@@ -1012,262 +1104,171 @@ export default function DEWDashboard() {
       </div>
 
       {/* System Details Modal */}
-      {showSystemDetails && selectedSystem && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-white">{selectedSystem}</h2>
-                <button onClick={() => setShowSystemDetails(false)} className="text-slate-400 hover:text-white">
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-
-              {detailedSystems[selectedSystem] && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-slate-400">Country:</span>
-                      <span className="text-white ml-2">{detailedSystems[selectedSystem].country}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">Type:</span>
-                      <span className="text-white ml-2">{detailedSystems[selectedSystem].type}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">Status:</span>
-                      <span className="text-green-400 ml-2">{detailedSystems[selectedSystem].status}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">Year Deployed:</span>
-                      <span className="text-white ml-2">{detailedSystems[selectedSystem].yearDeployed}</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-3">Technical Specifications</h3>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-slate-600">
-                            <th className="text-left p-2 text-slate-300">Parameter</th>
-                            <th className="text-left p-2 text-slate-300">Value</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(detailedSystems[selectedSystem].specifications).map(([key, value]) => (
-                            <tr key={key} className="border-b border-slate-700">
-                              <td className="p-2 text-slate-300 font-medium">{key}</td>
-                              <td className="p-2 text-white">{value}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-3">Capabilities</h3>
-                    <ul className="space-y-2">
-                      {detailedSystems[selectedSystem].capabilities.map((capability, idx) => (
-                        <li key={idx} className="text-slate-300 flex items-start">
-                          <span className="text-blue-400 mr-2">•</span>
-                          {capability}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+      {selectedSystem && (
+        <Dialog open={!!selectedSystem} onOpenChange={() => setSelectedSystem(null)}>
+          <DialogContent className="max-w-4xl bg-slate-800 text-white">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-blue-400" />
+                {selectedSystem.name} - Detailed Specifications
+              </DialogTitle>
+              <DialogDescription className="text-gray-300">
+                Comprehensive technical details and operational parameters
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-blue-400">System Overview</h3>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium text-gray-300">Type</TableCell>
+                        <TableCell className="text-white">{selectedSystem.type}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium text-gray-300">Status</TableCell>
+                        <TableCell>
+                          <Badge variant={selectedSystem.status === "Operational" ? "default" : "secondary"}>
+                            {selectedSystem.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium text-gray-300">Developer</TableCell>
+                        <TableCell className="text-white">{selectedSystem.details.developer}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium text-gray-300">Year Deployed</TableCell>
+                        <TableCell className="text-white">{selectedSystem.details.yearDeployed}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium text-gray-300">Estimated Cost</TableCell>
+                        <TableCell className="text-white">{selectedSystem.details.cost}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </div>
-              )}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-green-400">Technical Specifications</h3>
+                  <Table>
+                    <TableBody>
+                      {Object.entries(selectedSystem.details.specifications).map(([key, value]) => (
+                        <TableRow key={key}>
+                          <TableCell className="font-medium text-gray-300">{key}</TableCell>
+                          <TableCell className="text-white">{value}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-3 text-purple-400">Applications & Capabilities</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedSystem.details.applications.map((app, i) => (
+                    <Badge key={i} variant="outline" className="text-purple-300 border-purple-400">
+                      {app}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Algorithm Details Modal */}
-      {showAlgorithmDetails && selectedAlgorithm && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-white">{selectedAlgorithm}</h2>
-                <button onClick={() => setShowAlgorithmDetails(false)} className="text-slate-400 hover:text-white">
-                  <X className="h-6 w-6" />
-                </button>
+      {selectedAlgorithm && (
+        <Dialog open={!!selectedAlgorithm} onOpenChange={() => setSelectedAlgorithm(null)}>
+          <DialogContent className="max-w-4xl bg-slate-800 text-white">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-blue-400" />
+                {selectedAlgorithm.name} - Algorithm Details
+              </DialogTitle>
+              <DialogDescription className="text-gray-300">
+                Step-by-step implementation and technical requirements
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-blue-400">Description</h3>
+                <p className="text-gray-300">{selectedAlgorithm.description}</p>
               </div>
-
-              {algorithmDetails[selectedAlgorithm] && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Description</h3>
-                    <p className="text-slate-300">{algorithmDetails[selectedAlgorithm].description}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-3">Implementation Steps</h3>
-                    <div className="space-y-3">
-                      {algorithmDetails[selectedAlgorithm].steps.map((step, idx) => (
-                        <div key={idx} className="bg-slate-900/50 p-3 rounded-lg">
-                          <p className="text-slate-300">{step}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-green-400">Implementation Steps</h3>
+                  <div className="space-y-3">
+                    {selectedAlgorithm.steps.map((step, index) => (
+                      <div key={index} className="flex gap-3">
+                        <div className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-xs font-bold text-white mt-0.5">
+                          {index + 1}
                         </div>
+                        <p className="text-sm text-gray-300">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-yellow-400">Technical Details</h3>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium text-gray-300">Complexity</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              selectedAlgorithm.complexity === "High"
+                                ? "destructive"
+                                : selectedAlgorithm.complexity === "Medium"
+                                  ? "default"
+                                  : "secondary"
+                            }
+                          >
+                            {selectedAlgorithm.complexity}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium text-gray-300">Implementation</TableCell>
+                        <TableCell className="text-white text-sm">{selectedAlgorithm.implementation}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                  <div className="mt-4">
+                    <h4 className="font-semibold text-purple-400 mb-2">Applications</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedAlgorithm.applications.map((app, i) => (
+                        <Badge key={i} variant="outline" className="text-purple-300 border-purple-400">
+                          {app}
+                        </Badge>
                       ))}
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">Applications</h3>
-                      <ul className="space-y-1">
-                        {algorithmDetails[selectedAlgorithm].applications.map((app, idx) => (
-                          <li key={idx} className="text-slate-300 flex items-center">
-                            <span className="text-green-400 mr-2">✓</span>
-                            {app}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">Implementation Details</h3>
-                      <div className="space-y-2 text-sm">
-                        <div>
-                          <span className="text-slate-400">Complexity:</span>
-                          <span className="text-white ml-2">{algorithmDetails[selectedAlgorithm].complexity}</span>
-                        </div>
-                        <div>
-                          <span className="text-slate-400">Implementation:</span>
-                          <span className="text-white ml-2">{algorithmDetails[selectedAlgorithm].implementation}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Report Modal */}
       {showReport && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-white">Directed Energy Weapons - Comprehensive Report</h2>
-                <button onClick={() => setShowReport(false)} className="text-slate-400 hover:text-white">
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-
-              <div className="space-y-8 text-slate-300">
-                <section>
-                  <h3 className="text-xl font-semibold text-white mb-4">Executive Summary</h3>
-                  <p className="mb-4">
-                    Directed Energy Weapons (DEWs) represent a paradigm shift in modern warfare, offering precision,
-                    speed-of-light engagement, and cost-effective solutions for various military applications. This
-                    comprehensive analysis examines the current state, technological capabilities, and strategic
-                    implications of DEW systems globally.
-                  </p>
-                  <p>
-                    Key findings indicate that while the United States leads in overall DEW development with 95%
-                    technological maturity, emerging powers like India (75%) and neighboring countries are rapidly
-                    advancing their capabilities, creating new strategic dynamics in the region.
-                  </p>
-                </section>
-
-                <section>
-                  <h3 className="text-xl font-semibold text-white mb-4">Technology Assessment</h3>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-white mb-2">High Energy Lasers (HEL)</h4>
-                      <ul className="space-y-1 text-sm">
-                        <li>• Maturity: 95% - Most advanced DEW technology</li>
-                        <li>• Power Range: 10kW - 300kW+</li>
-                        <li>• Effective Range: 1-20 km</li>
-                        <li>• Primary Applications: Anti-drone, missile defense</li>
-                        <li>• Key Challenge: Atmospheric interference</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-white mb-2">High Power Microwave (HPM)</h4>
-                      <ul className="space-y-1 text-sm">
-                        <li>• Maturity: 85% - Rapidly developing</li>
-                        <li>• Power Range: 100MW - 1GW</li>
-                        <li>• Effective Range: 0.5-10 km</li>
-                        <li>• Primary Applications: Electronic warfare</li>
-                        <li>• Key Advantage: Area effect capability</li>
-                      </ul>
-                    </div>
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-xl font-semibold text-white mb-4">Strategic Analysis</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold text-white mb-2">Regional Threat Assessment</h4>
-                      <p className="text-sm mb-2">
-                        Analysis of neighboring countries reveals significant DEW development activities:
-                      </p>
-                      <ul className="space-y-1 text-sm ml-4">
-                        <li>• Eastern neighbor: Advanced HPM systems, 15+ research facilities, space-based focus</li>
-                        <li>• Western neighbor: Tactical laser development, defensive applications priority</li>
-                        <li>• Technology gap: India currently 10-15 years behind leading nations</li>
-                        <li>• Acceleration needed: 2x investment required to maintain strategic parity</li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold text-white mb-2">Capability Gaps</h4>
-                      <ul className="space-y-1 text-sm ml-4">
-                        <li>• Power scaling: Limited to sub-100kW systems</li>
-                        <li>• Atmospheric compensation: Basic adaptive optics</li>
-                        <li>• Platform integration: Ground-based systems only</li>
-                        <li>• Counter-DEW measures: Minimal defensive capabilities</li>
-                      </ul>
-                    </div>
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-xl font-semibold text-white mb-4">Recommendations</h3>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-white mb-2">Immediate Actions (2024-2026)</h4>
-                      <ul className="space-y-1 text-sm">
-                        <li>• Accelerate KALI-5000 development</li>
-                        <li>• Establish DEW testing ranges</li>
-                        <li>• Increase R&D funding by 200%</li>
-                        <li>• Develop counter-DEW technologies</li>
-                        <li>• Strengthen international partnerships</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-white mb-2">Long-term Strategy (2026-2030)</h4>
-                      <ul className="space-y-1 text-sm">
-                        <li>• Deploy operational HEL systems</li>
-                        <li>• Develop space-based platforms</li>
-                        <li>• Achieve 100kW+ laser capability</li>
-                        <li>• Integrate AI-based targeting</li>
-                        <li>• Export defensive systems</li>
-                      </ul>
-                    </div>
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-xl font-semibold text-white mb-4">Conclusion</h3>
-                  <p className="text-sm">
-                    The DEW landscape is rapidly evolving, with significant implications for national security. India's
-                    current position requires immediate strategic action to maintain technological competitiveness and
-                    regional stability. Investment in indigenous capabilities, international partnerships, and defensive
-                    measures will be crucial for future security architecture.
-                  </p>
-                </section>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Dialog open={showReport} onOpenChange={() => setShowReport(false)}>
+          <DialogContent className="max-w-4xl bg-slate-800 text-white">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-blue-400" />
+                Directed Energy Weapons - Comprehensive Analysis Report
+              </DialogTitle>
+              <DialogDescription className="text-gray-300">
+                DRDO ISSA Internship Project - Strategic Assessment and Recommendations
+              </DialogDescription>
+            </DialogHeader>
+            <ReportContent />
+          </DialogContent>
+        </Dialog>
       )}
     </>
   )
